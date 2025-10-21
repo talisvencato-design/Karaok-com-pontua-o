@@ -1,354 +1,187 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-  <meta charset="utf-8" />
-  <title>Karaokê do Japa</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <style>
-    body {
-      margin: 0;
-      color: #fff;
-      font-family: Arial, sans-serif;
-      background: url('./9937771.jpg') no-repeat center center fixed;
-      background-size: cover;
-      overflow-x: hidden;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-    header { text-align: center; padding: 20px; }
-    header img { max-width: 480px; width: 90%; height: auto; }
-    main.wrap {
-      flex: 1;
-      display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start;
-      gap: 30px; padding: 20px;
-    }
-    .left { width: 280px; text-align: center; flex-shrink: 0; }
-    .right {
-      flex: 1; background: rgba(0,0,0,0.7); border-radius: 12px;
-      padding: 20px; text-align: center; min-height: 380px; max-width: 900px;
-      min-width: 300px;
-    }
-    input#codigo {
-      width: 220px; padding: 14px; font-size: 22px;
-      border-radius: 8px; border: none; text-align: center;
-    }
-    .keypad {
-      display: grid; grid-template-columns: repeat(3, 90px);
-      gap: 12px; margin-top: 18px; justify-content: center;
-    }
-    .keypad button {
-      padding: 16px; font-size: 20px; border-radius: 8px;
-      border: none; cursor: pointer; background: #333; color: #fff;
-      transition: background 0.1s;
-    }
-    .keypad button:active { background: #555; }
-    .keypad .enter { background: #28a745; }
-    .keypad .clear { background: #dc3545; }
-    .keypad .back { background: #ff8800; }
-    .thumbnails {
-      display: flex; flex-wrap: wrap; justify-content: center;
-      gap: 20px; margin-top: 20px;
-    }
-    .thumbnails img {
-      width: 240px; border-radius: 10px;
-      border: 3px solid #666; cursor: pointer;
-      transition: transform .15s;
-    }
-    .thumbnails img:hover {
-      transform: scale(1.08); border-color: #ffcc00;
-    }
-    #webviewer {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.95);
-      display: none; justify-content: center; align-items: center;
-      z-index: 9999;
-      flex-direction: column;
-    }
-    #webviewer iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-    #closeBtn {
-      position: absolute;
-      top: 15px;
-      right: 20px;
-      background: #dc3545;
-      color: white;
-      border: none;
-      font-size: 22px;
-      border-radius: 50%;
-      width: 45px; height: 45px;
-      cursor: pointer;
-      z-index: 10000;
-    }
-    #closeBtn:hover { background: #b52a36; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aniversário da Vovó</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            margin: 0;
+            overflow: hidden; /* Esconde o overflow para a animação */
+            background-color: #fce4ec; /* Rosa claro */
+            color: #4a148c; /* Roxo escuro */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
+            text-align: center;
+        }
 
-    /* Estilos Adicionados para o Placar e Fogos */
-    #score-display {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.9);
-        display: none;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        z-index: 10001;
-        text-align: center;
-    }
-    #score-text {
-        font-size: 15vw;
-        font-weight: bold;
-        color: #ffcc00;
-        text-shadow: 0 0 20px #ff0000, 0 0 10px #ff0000;
-    }
-    #score-label {
-        font-size: 4vw;
-        color: #fff;
-        margin-top: 20px;
-    }
-    /* Animação de Fogos de Artifício */
-    .fireworks {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 10002;
-      display: none;
-    }
-    .firework {
-      position: absolute;
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      opacity: 0;
-      /* Animação simples de expansão e desaparecimento */
-      animation: explode 1s ease-out forwards;
-    }
-    /* Posições e cores variadas para os fogos */
-    .firework.a { background-color: #f00; left: 20%; top: 80%; }
-    .firework.b { background-color: #0f0; left: 50%; top: 50%; animation-delay: 0.5s; }
-    .firework.c { background-color: #00f; left: 80%; top: 70%; animation-delay: 1s; }
-    .firework.d { background-color: #ff0; left: 35%; top: 60%; animation-delay: 1.5s; }
-    .firework.e { background-color: #f0f; left: 65%; top: 90%; animation-delay: 2s; }
+        #confetti-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Permite interagir com o conteúdo abaixo */
+            z-index: 1000;
+        }
 
-    @keyframes explode {
-      0% { transform: scale(0); opacity: 1; }
-      100% { transform: scale(40); opacity: 0; }
-    }
-    /* Fim dos Estilos Adicionados */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #ffd700; /* Dourado */
+            border-radius: 50%; /* Para confetes redondos */
+            opacity: 0;
+            animation: fall linear forwards;
+        }
 
-    @media (max-width: 768px) {
-      main.wrap {
-        flex-direction: column;
-        align-items: center;
-        gap: 20px;
-      }
-      header img { max-width: 100%; }
-      .left { width: 100%; max-width: 300px; }
-      .right {
-        width: 95%; max-width: none; min-height: 200px;
-        order: -1;
-      }
-      .keypad {
-        grid-template-columns: repeat(3, 1fr);
-        width: 100%;
-        max-width: 300px;
-        margin: 18px auto 0;
-      }
-      .keypad button { padding: 12px; font-size: 18px; }
-      input#codigo { width: 100%; max-width: 220px; }
-      .thumbnails img { width: 100%; max-width: 180px; }
-      /* Responsividade dos estilos adicionados */
-      #score-text { font-size: 20vw; }
-      #score-label { font-size: 6vw; }
-    }
-  </style>
+        .confetti.square {
+            border-radius: 0; /* Para confetes quadrados */
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 1;
+            }
+        }
+
+        h1 {
+            font-size: 3em;
+            color: #880e4f; /* Vinho */
+            text-shadow: 2px 2px #f8bbd0; /* Rosa mais claro */
+            margin-bottom: 20px;
+            z-index: 1; /* Para garantir que o texto fique acima do confete */
+        }
+
+        .message {
+            font-size: 1.5em;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto 30px auto;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+
+        .highlight {
+            color: #d81b60; /* Rosa intenso */
+            font-weight: bold;
+        }
+
+        .balloon {
+            position: absolute;
+            width: 80px;
+            height: 100px;
+            background-color: #ff4081; /* Rosa */
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            box-shadow: inset -10px -10px 0 rgba(0, 0, 0, 0.2);
+            animation: float 6s ease-in-out infinite;
+            z-index: 0; /* Para ficar atrás do conteúdo principal */
+        }
+
+        .balloon::before {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 20px;
+            background-color: #ff4081;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%) rotate(45deg);
+            border-radius: 0 0 50% 50%;
+        }
+
+        .balloon.blue { background-color: #2196f3; box-shadow: inset -10px -10px 0 rgba(0, 0, 0, 0.2); }
+        .balloon.green { background-color: #4caf50; box-shadow: inset -10px -10px 0 rgba(0, 0, 0, 0.2); }
+        .balloon.yellow { background-color: #ffeb3b; box-shadow: inset -10px -10px 0 rgba(0, 0, 0, 0.2); }
+
+        .balloon.blue::before { background-color: #2196f3; }
+        .balloon.green::before { background-color: #4caf50; }
+        .balloon.yellow::before { background-color: #ffeb3b; }
+
+        @keyframes float {
+            0% { transform: translateY(0) rotate(-2deg); }
+            50% { transform: translateY(-30px) rotate(2deg); }
+            100% { transform: translateY(0) rotate(-2deg); }
+        }
+    </style>
 </head>
 <body>
-  <header><img src="./logo.png" alt="Karaokê do Japa" /></header>
-  <main class="wrap">
-    <section class="left">
-      <p>Digite o código da música:</p>
-      <input id="codigo" placeholder="Ex: 6197" type="tel" inputmode="none" />
-      <div class="keypad">
-        <button onclick="digitar('1')">1</button>
-        <button onclick="digitar('2')">2</button>
-        <button onclick="digitar('3')">3</button>
-        <button onclick="digitar('4')">4</button>
-        <button onclick="digitar('5')">5</button>
-        <button onclick="digitar('6')">6</button>
-        <button onclick="digitar('7')">7</button>
-        <button onclick="digitar('8')">8</button>
-        <button onclick="digitar('9')">9</button>
-        <button class="back" onclick="backspace()">BACK</button>
-        <button onclick="digitar('0')">0</button>
-        <button class="clear" onclick="clearAll()">C</button>
-        <button class="enter" onclick="buscar()">✔ ENTER</button>
-      </div>
-    </section>
-    <section class="right" id="resultado">
-      <p>🔎 Digite um código para começar.</p>
-    </section>
-  </main>
-  <div id="webviewer">
-    <button id="closeBtn" onclick="fecharWebViewer()">✕</button>
-    <iframe id="youtubeFrame" allow="autoplay; fullscreen; encrypted-media" allowfullscreen></iframe>
-    <div id="score-display">
-      <div id="fireworks-container" class="fireworks">
-        <div class="firework a"></div>
-        <div class="firework b"></div>
-        <div class="firework c"></div>
-        <div class="firework d"></div>
-        <div class="firework e"></div>
-      </div>
-      <div id="score-label">SUA NOTA:</div>
-      <div id="score-text">0</div>
-    </div>
-    </div>
-  <audio id="bgAudio" src="./ambiente.mp3" loop></audio>
-  <audio id="applauseAudio" src="./aplausos.mp3" preload="auto"></audio>
-  <script>
-    const bgAudio = document.getElementById('bgAudio');
-    bgAudio.volume = 0.15;
-    // Variáveis Adicionadas para a Pontuação
-    const applauseAudio = document.getElementById('applauseAudio');
-    applauseAudio.volume = 0.8;
-    const scoreDisplay = document.getElementById('score-display');
-    const scoreText = document.getElementById('score-text');
-    const fireworksContainer = document.getElementById('fireworks-container');
-    // Fim das Variáveis Adicionadas
-    const codigo = document.getElementById('codigo');
-    const viewer = document.getElementById('webviewer');
-    const frame = document.getElementById('youtubeFrame');
-    const resultado = document.getElementById('resultado');
+    <div id="confetti-container"></div>
 
-    document.addEventListener('click', () => {
-      if (bgAudio.paused) bgAudio.play().catch(()=>{});
-    }, { once: true });
+    <h1>Feliz Aniversário, Vovó Querida!</h1>
+    <p class="message">
+        Hoje é um dia <span class="highlight">muito especial</span>!
+        Celebramos mais um ano da sua vida, Vovó.
+        Que seu dia seja repleto de <span class="highlight">alegria, paz e muito amor</span>.
+        Somos muito gratos por ter você em nossas vidas, por sua sabedoria, seu carinho e seu sorriso que ilumina tudo.
+        Que Deus a abençoe com <span class="highlight">saúde e muitas felicidades</span>, hoje e sempre!
+        Te amamos muito! ❤️
+    </p>
 
-    let musicas = [];
-    const API_KEY = "AIzaSyABdd6X4cKzMHR8JVWdw0jlLoFY4UDRQ88";
-
-    async function carregarMusicas() {
-      try {
-        const res = await fetch("./karaoke.json");
-        musicas = await res.json();
-      } catch (e) { console.error("Erro ao carregar karaoke.json:", e); }
-    }
-
-    function digitar(n){ codigo.value += n; }
-    function backspace(){ codigo.value = codigo.value.slice(0,-1); }
-    function clearAll(){ codigo.value = ''; }
-
-    async function buscar() {
-      const codigoVal = codigo.value.trim();
-      resultado.innerHTML = "";
-      codigo.blur();
-      const item = musicas.find(m => Number(m.codigo) === Number(codigoVal));
-      if (!item) { resultado.innerHTML = "<p>❌ Código não encontrado.</p>"; return; }
-      const query = `karaoke ${item.artista} ${item.musica}`;
-      const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=6&q=${encodeURIComponent(query)}&key=${API_KEY}`;
-      try {
-        const res = await fetch(url);
-        const data = await res.json();
-        const videos = (data.items || []).filter(i => i.id?.videoId);
-        if (!videos.length) {
-          resultado.innerHTML = `<h2>${item.artista} - ${item.musica}</h2><p>❌ Nenhum vídeo encontrado.</p>`;
-          return;
+    <script>
+        // Função para criar balões
+        function createBalloon(colorClass, left, top, delay) {
+            const balloon = document.createElement('div');
+            balloon.classList.add('balloon', colorClass);
+            balloon.style.left = left;
+            balloon.style.top = top;
+            balloon.style.animationDelay = delay + 's';
+            document.body.appendChild(balloon);
         }
-        resultado.innerHTML = `<h2>${item.artista} - ${item.musica}</h2><div class='thumbnails'></div>`;
-        const thumbs = resultado.querySelector('.thumbnails');
-        videos.slice(0,3).forEach(v => {
-          const img = document.createElement("img");
-          img.src = v.snippet.thumbnails.medium.url;
-          img.alt = v.snippet.title;
-          img.onclick = () => abrirVideoNoWebViewer(v.id.videoId);
-          thumbs.appendChild(img);
-        });
-      } catch (err) {
-        resultado.innerHTML = "<p>❌ Erro ao buscar vídeo.</p>";
-        console.error(err);
-      }
-    }
 
-    function abrirVideoNoWebViewer(videoId) {
-      bgAudio.pause();
-      const embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&enablejsapi=1&controls=1`;
-      frame.src = "";
-      setTimeout(() => { frame.src = embedUrl; }, 100);
-      frame.setAttribute("allow", "autoplay; fullscreen; encrypted-media");
-      viewer.style.display = "flex";
-      // Garante que o placar de pontuação esteja oculto ao iniciar o vídeo
-      scoreDisplay.style.display = "none";
+        // Adicionar alguns balões
+        createBalloon('blue', '10%', '80%', 0);
+        createBalloon('green', '20%', '90%', 1);
+        createBalloon('yellow', '80%', '75%', 0.5);
+        createBalloon('blue', '90%', '85%', 1.5);
+        createBalloon('', '5%', '70%', 2); // Rosa padrão
+        createBalloon('green', '70%', '95%', 2.5);
 
-      window.onYouTubeIframeAPIReady = function() {
-        new YT.Player('youtubeFrame', {
-          events: {
-            // Chama a função de pontuação quando o vídeo termina
-            'onStateChange': function(e) {
-              if (e.data === YT.PlayerState.ENDED) mostrarPontuacao();
+        // Animação de confetes e papel picado
+        const confettiContainer = document.getElementById('confetti-container');
+        const colors = ['#fce4ec', '#880e4f', '#d81b60', '#ffd700', '#2196f3', '#4caf50', '#ffeb3b']; // Cores festivas
+
+        function createConfetti() {
+            const confetti = document.createElement('div');
+            confetti.classList.add('confetti');
+
+            // Aleatoriamente quadrado ou redondo
+            if (Math.random() > 0.5) {
+                confetti.classList.add('square');
+                confetti.style.width = (Math.random() * 8 + 5) + 'px';
+                confetti.style.height = (Math.random() * 8 + 5) + 'px';
+            } else {
+                confetti.style.width = (Math.random() * 10 + 5) + 'px';
+                confetti.style.height = (Math.random() * 10 + 5) + 'px';
             }
-          }
-        });
-      };
-      if (!document.getElementById('ytapi')) {
-        const tag = document.createElement('script');
-        tag.id = 'ytapi';
-        tag.src = "https://www.youtube.com/iframe_api";
-        document.body.appendChild(tag);
-      }
-    }
 
-    // Função Adicionada para Mostrar a Pontuação e Animações
-    function mostrarPontuacao() {
-      frame.src = ""; // Para o vídeo
-      scoreDisplay.style.display = "flex";
-      scoreText.textContent = "0";
-      applauseAudio.currentTime = 0; // Reinicia o som
-      applauseAudio.play().catch(()=>{});
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.left = Math.random() * 100 + 'vw';
+            confetti.style.animationDuration = (Math.random() * 3 + 2) + 's'; // Duração de 2 a 5 segundos
+            confetti.style.animationDelay = (Math.random() * 0.5) + 's'; // Pequeno atraso para variação
+            confetti.style.opacity = Math.random() * 0.5 + 0.5; // Opacidade variada
 
-      // 1. Randomização da Pontuação (2 segundos)
-      let randomizationInterval = setInterval(() => {
-        // Random de 0 a 100 para a randomização
-        scoreText.textContent = Math.floor(Math.random() * 101);
-      }, 50);
+            confettiContainer.appendChild(confetti);
 
-      // 2. Apresentação da Nota Final
-      setTimeout(() => {
-        clearInterval(randomizationInterval);
-        // Gera a nota final entre 75 e 100
-        const finalScore = Math.floor(Math.random() * (100 - 75 + 1)) + 75;
-        scoreText.textContent = finalScore;
-        fireworksContainer.style.display = "block"; // Mostra os fogos
+            // Remover confete após a animação para não sobrecarregar o DOM
+            confetti.addEventListener('animationend', () => {
+                confetti.remove();
+            });
+        }
 
-        // 3. Fechar e Retornar ao Menu (após 5 segundos de apresentação)
-        setTimeout(() => {
-          fecharWebViewer();
-        }, 5000); // 5 segundos de apresentação
-      }, 2000); // 2 segundos de randomização
-    }
-    // Fim da Função Adicionada
-
-    function fecharWebViewer() {
-      viewer.style.display = "none";
-      frame.src = "";
-      // Esconde elementos de pontuação e para o som (Adicionado)
-      scoreDisplay.style.display = "none";
-      fireworksContainer.style.display = "none";
-      applauseAudio.pause();
-      // Fim da lógica de esconder
-      resultado.innerHTML = "<p>🔎 Digite um código para começar.</p>";
-      codigo.value = "";
-      bgAudio.play().catch(()=>{});
-    }
-
-    carregarMusicas();
-  </script>
+        // Gerar confetes continuamente
+        setInterval(createConfetti, 100); // Cria um confete a cada 100ms
+        for (let i = 0; i < 50; i++) { // Cria alguns confetes iniciais
+            createConfetti();
+        }
+    </script>
 </body>
 </html>
