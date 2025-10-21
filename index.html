@@ -66,6 +66,11 @@
       z-index: 9999;
       flex-direction: column;
     }
+    #webviewer iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
     #closeBtn {
       position: absolute;
       top: 15px;
@@ -81,7 +86,7 @@
     }
     #closeBtn:hover { background: #b52a36; }
 
-    /* Estilos para o placar de pontuação */
+    /* Estilos Adicionados para o Placar e Fogos */
     #score-display {
         position: absolute;
         top: 0;
@@ -97,27 +102,24 @@
         text-align: center;
     }
     #score-text {
-        font-size: 15vw; /* Tamanho grande para a pontuação */
+        font-size: 15vw;
         font-weight: bold;
         color: #ffcc00;
         text-shadow: 0 0 20px #ff0000, 0 0 10px #ff0000;
-        transition: transform 0.1s ease-out;
-        will-change: transform;
     }
     #score-label {
         font-size: 4vw;
         color: #fff;
         margin-top: 20px;
     }
-
-    /* Estilos para a animação de fogos de artifício (simples) */
+    /* Animação de Fogos de Artifício */
     .fireworks {
       position: absolute;
       width: 100%;
       height: 100%;
       pointer-events: none;
       z-index: 10002;
-      display: none; /* Inicia oculto */
+      display: none;
     }
     .firework {
       position: absolute;
@@ -137,7 +139,7 @@
       0% { transform: scale(0); opacity: 1; }
       100% { transform: scale(40); opacity: 0; }
     }
-
+    /* Fim dos Estilos Adicionados */
 
     @media (max-width: 768px) {
       main.wrap {
@@ -160,7 +162,7 @@
       .keypad button { padding: 12px; font-size: 18px; }
       input#codigo { width: 100%; max-width: 220px; }
       .thumbnails img { width: 100%; max-width: 180px; }
-
+      /* Responsividade dos estilos adicionados */
       #score-text { font-size: 20vw; }
       #score-label { font-size: 6vw; }
     }
@@ -195,7 +197,6 @@
   <div id="webviewer">
     <button id="closeBtn" onclick="fecharWebViewer()">✕</button>
     <iframe id="youtubeFrame" allow="autoplay; fullscreen; encrypted-media" allowfullscreen></iframe>
-
     <div id="score-display">
       <div id="fireworks-container" class="fireworks">
         <div class="firework a"></div>
@@ -207,21 +208,23 @@
       <div id="score-label">SUA NOTA:</div>
       <div id="score-text">0</div>
     </div>
-  </div>
+    </div>
   <audio id="bgAudio" src="./ambiente.mp3" loop></audio>
   <audio id="applauseAudio" src="./aplausos.mp3" preload="auto"></audio>
   <script>
     const bgAudio = document.getElementById('bgAudio');
     bgAudio.volume = 0.15;
+    // Variáveis Adicionadas
     const applauseAudio = document.getElementById('applauseAudio');
-    applauseAudio.volume = 0.8; // Ajuste o volume dos aplausos conforme necessário
+    applauseAudio.volume = 0.8;
+    const scoreDisplay = document.getElementById('score-display');
+    const scoreText = document.getElementById('score-text');
+    const fireworksContainer = document.getElementById('fireworks-container');
+    // Fim das Variáveis Adicionadas
     const codigo = document.getElementById('codigo');
     const viewer = document.getElementById('webviewer');
     const frame = document.getElementById('youtubeFrame');
     const resultado = document.getElementById('resultado');
-    const scoreDisplay = document.getElementById('score-display');
-    const scoreText = document.getElementById('score-text');
-    const fireworksContainer = document.getElementById('fireworks-container');
 
     document.addEventListener('click', () => {
       if (bgAudio.paused) bgAudio.play().catch(()=>{});
@@ -279,11 +282,12 @@
       setTimeout(() => { frame.src = embedUrl; }, 100);
       frame.setAttribute("allow", "autoplay; fullscreen; encrypted-media");
       viewer.style.display = "flex";
-      scoreDisplay.style.display = "none"; // Garante que o placar esteja oculto ao abrir o vídeo
+      scoreDisplay.style.display = "none"; // Oculta o placar ao abrir um novo vídeo
 
       window.onYouTubeIframeAPIReady = function() {
         const player = new YT.Player('youtubeFrame', {
           events: {
+            // Chama a nova função quando o vídeo termina
             'onStateChange': function(e) {
               if (e.data === YT.PlayerState.ENDED) mostrarPontuacao();
             }
@@ -298,20 +302,20 @@
       }
     }
 
+    // Função Adicionada para Mostrar a Pontuação
     function mostrarPontuacao() {
       frame.src = ""; // Para o vídeo
       scoreDisplay.style.display = "flex";
       scoreText.textContent = "0";
-      applauseAudio.currentTime = 0; // Reinicia o som
+      applauseAudio.currentTime = 0;
       applauseAudio.play().catch(()=>{});
 
       // 1. Randomização da Pontuação (2 segundos)
       let randomizationInterval = setInterval(() => {
-        // Gera um número aleatório entre 0 e 100 para a randomização
         scoreText.textContent = Math.floor(Math.random() * 101);
       }, 50);
 
-      // 2. Apresentação da Nota Final (5 segundos após a randomização)
+      // 2. Apresentação da Nota Final
       setTimeout(() => {
         clearInterval(randomizationInterval);
         // Gera a nota final entre 75 e 100
@@ -325,16 +329,18 @@
         }, 5000); // 5 segundos de apresentação
       }, 2000); // 2 segundos de randomização
     }
-
+    // Fim da Função Adicionada
 
     function fecharWebViewer() {
       viewer.style.display = "none";
+      frame.src = "";
+      // Esconde elementos de pontuação se eles estiverem visíveis
       scoreDisplay.style.display = "none";
       fireworksContainer.style.display = "none";
-      frame.src = "";
+      applauseAudio.pause();
+      // Fim da lógica de esconder
       resultado.innerHTML = "<p>🔎 Digite um código para começar.</p>";
       codigo.value = "";
-      applauseAudio.pause(); // Garante que o som de aplausos pare
       bgAudio.play().catch(()=>{});
     }
 
