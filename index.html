@@ -112,8 +112,7 @@
         color: #fff;
         margin-top: 20px;
     }
-    
-    /* Animação de Fogos de Artifício - NOVO ESTILO */
+    /* Animação de Fogos de Artifício */
     .fireworks {
       position: absolute;
       width: 100%;
@@ -121,17 +120,26 @@
       pointer-events: none;
       z-index: 10002;
       display: none;
-      /* Remove os divs fixos 'firework a, b, c, d, e' */
     }
-    /* Estilo da partícula individual de fogo de artifício/confete */
-    .firework-particle {
+    .firework {
       position: absolute;
-      width: 6px; /* Tamanho do confete/partícula */
-      height: 6px;
+      width: 10px;
+      height: 10px;
       border-radius: 50%;
-      background-color: white; /* Cor padrão, será sobreposta pelo JS */
       opacity: 0;
-      /* Será posicionado e animado via JavaScript */
+      /* Animação simples de expansão e desaparecimento */
+      animation: explode 1s ease-out forwards;
+    }
+    /* Posições e cores variadas para os fogos */
+    .firework.a { background-color: #f00; left: 20%; top: 80%; }
+    .firework.b { background-color: #0f0; left: 50%; top: 50%; animation-delay: 0.5s; }
+    .firework.c { background-color: #00f; left: 80%; top: 70%; animation-delay: 1s; }
+    .firework.d { background-color: #ff0; left: 35%; top: 60%; animation-delay: 1.5s; }
+    .firework.e { background-color: #f0f; left: 65%; top: 90%; animation-delay: 2s; }
+
+    @keyframes explode {
+      0% { transform: scale(0); opacity: 1; }
+      100% { transform: scale(40); opacity: 0; }
     }
     /* Fim dos Estilos Adicionados */
 
@@ -193,7 +201,12 @@
     <iframe id="youtubeFrame" allow="autoplay; fullscreen; encrypted-media" allowfullscreen></iframe>
     <div id="score-display">
       <div id="fireworks-container" class="fireworks">
-        </div>
+        <div class="firework a"></div>
+        <div class="firework b"></div>
+        <div class="firework c"></div>
+        <div class="firework d"></div>
+        <div class="firework e"></div>
+      </div>
       <div id="score-label">SUA NOTA:</div>
       <div id="score-text">0</div>
     </div>
@@ -292,55 +305,7 @@
       }
     }
 
-    // Função Adicionada para Criar o Efeito de Partículas de Fogos (Confete/Brilho)
-    function dispararFogosDeArtificio(num) {
-      const container = document.getElementById('fireworks-container');
-      // Cores vibrantes para o efeito de confete/brilho
-      const cores = ['#ffcc00', '#ff0000', '#00ff00', '#00ccff', '#ff00ff', '#ffffff', '#ff8800'];
-      // Limpa fogos anteriores
-      container.innerHTML = '';
-
-      for (let i = 0; i < num; i++) {
-        // Posição aleatória para o ponto de estouro
-        const x = Math.random() * 80 + 10; // 10% a 90%
-        const y = Math.random() * 60 + 20; // 20% a 80%
-        const numParticulas = 30 + Math.floor(Math.random() * 20); // 30 a 50 partículas por explosão
-
-        for (let j = 0; j < numParticulas; j++) {
-          const particle = document.createElement('div');
-          particle.className = 'firework-particle';
-          // Cor aleatória
-          particle.style.backgroundColor = cores[Math.floor(Math.random() * cores.length)];
-
-          // Posição inicial (ponto de estouro)
-          particle.style.left = `${x}%`;
-          particle.style.top = `${y}%`;
-
-          // Direção e distância aleatórias para a explosão
-          const angle = Math.random() * 360;
-          const distance = Math.random() * 150 + 50; // 50px a 200px de distância de explosão
-
-          // Animação via JS para o efeito de expansão e desaparecimento
-          particle.animate([
-            { transform: 'scale(0) translate(0, 0)', opacity: 1 },
-            { transform: `scale(1) translate(${Math.cos(angle * Math.PI / 180) * distance}px, ${Math.sin(angle * Math.PI / 180) * distance}px)`, opacity: 0 }
-          ], {
-            duration: Math.random() * 1000 + 800, // 800ms a 1800ms
-            easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)', // desaceleração
-            delay: i * 300 // Atraso para múltiplos "disparos" sequenciais
-          });
-
-          container.appendChild(particle);
-
-          // Remove o elemento após a animação para limpar o DOM
-          setTimeout(() => particle.remove(), (i * 300) + 2000);
-        }
-      }
-    }
-    // Fim da Função Adicionada para Criar o Efeito de Partículas de Fogos (Confete/Brilho)
-
-
-    // Função Modificada para Mostrar a Pontuação e Animações
+    // Função Adicionada para Mostrar a Pontuação e Animações
     function mostrarPontuacao() {
       frame.src = ""; // Para o vídeo
       scoreDisplay.style.display = "flex";
@@ -360,10 +325,7 @@
         // Gera a nota final entre 75 e 100
         const finalScore = Math.floor(Math.random() * (100 - 75 + 1)) + 75;
         scoreText.textContent = finalScore;
-
-        // CHAMA A NOVA FUNÇÃO DE FOGOS DE ARTIFICIO COM 3 EXPLOSÕES
-        dispararFogosDeArtificio(3);
-        fireworksContainer.style.display = "block"; // Mostra o container
+        fireworksContainer.style.display = "block"; // Mostra os fogos
 
         // 3. Fechar e Retornar ao Menu (após 5 segundos de apresentação)
         setTimeout(() => {
@@ -371,7 +333,7 @@
         }, 5000); // 5 segundos de apresentação
       }, 2000); // 2 segundos de randomização
     }
-    // Fim da Função Modificada
+    // Fim da Função Adicionada
 
     function fecharWebViewer() {
       viewer.style.display = "none";
