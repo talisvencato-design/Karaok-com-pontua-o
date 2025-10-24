@@ -150,7 +150,6 @@
           <img src="${it.thumb}" alt="${escapeHtml(it.title)}">
           <p title="${escapeHtml(it.title)}">${escapeHtml(truncate(it.title,28))}</p>
         `;
-        // drag events
         div.addEventListener('dragstart', dragStart);
         div.addEventListener('dragend', dragEnd);
         div.addEventListener('dragover', dragOver);
@@ -169,7 +168,7 @@
 
     function removerDaFila(idx){ fila.splice(idx,1); atualizarFilaUI(); }
 
-    // Drag & Drop handlers (simples)
+    // Drag & Drop handlers
     let dragSrcIndex = null;
     function dragStart(e){ this.classList.add('dragging'); dragSrcIndex = Number(this.dataset.index); e.dataTransfer.effectAllowed = 'move'; }
     function dragEnd(){ this.classList.remove('dragging'); dragSrcIndex = null; atualizarFilaUI(); }
@@ -207,10 +206,10 @@
 
     // Player & workflow
     function abrirWebViewer(){ viewer.style.display = 'flex'; scoreDisplay.style.display = 'none'; fireworksContainer.style.display = 'none'; if(!document.getElementById('ytapi')){ const tag = document.createElement('script'); tag.id='ytapi'; tag.src='https://www.youtube.com/iframe_api'; document.body.appendChild(tag); }
-      if(window.YT && YT.Player){ /* noop - will init when creating player */ } else { window.onYouTubeIframeAPIReady = ()=>{}; }
+      if(window.YT && YT.Player){ /* noop */ } else { window.onYouTubeIframeAPIReady = ()=>{}; }
     }
 
-    function criarPlayerECarregar(videoId){ // sempre recria para garantir eventos limpos
+    function criarPlayerECarregar(videoId){
       const frameContainer = document.getElementById('youtubeFrame'); frameContainer.innerHTML = '';
       if(ytPlayer){ try{ ytPlayer.destroy(); }catch(e){} ytPlayer = null; }
       ytPlayer = new YT.Player('youtubeFrame', {
@@ -224,58 +223,80 @@
     }
 
     // Sequência de reprodução
-    async function iniciarFila(){ if(!fila.length) return; currentIndex = 0; abrirWebViewer(); playCurrent(); }
-    function playCurrent(){ const it = fila[currentIndex]; if(!it) return; // load YT API then player
+    async function iniciarFila() {
+      if (!fila.length) return;
+      currentIndex = 0;
+
+      // 🔇 Pausa música de fundo durante os vídeos
+      try { bgAudio.pause(); bgAudio.currentTime = 0; } catch(e){}
+
+      abrirWebViewer();
+      playCurrent();
+    }
+
+    function playCurrent(){ const it = fila[currentIndex]; if(!it) return;
       if(window.YT && YT.Player){ criarPlayerECarregar(it.videoId); } else { window.onYouTubeIframeAPIReady = ()=> criarPlayerECarregar(it.videoId); const tag = document.getElementById('ytapi'); if(!tag){ const s = document.createElement('script'); s.id='ytapi'; s.src='https://www.youtube.com/iframe_api'; document.body.appendChild(s); } }
     }
 
-    // Quando vídeo termina
     let scoreInterval = null; let countdownInterval = null;
-    function onVideoEnded(){ mostrarPontuacao(() => { // callback após pontuação e contagem
-        // se houver próximo vídeo
-        if(currentIndex < fila.length - 1){ currentIndex++; playCurrent(); } else { // fim da fila
-          // fecha após a contagem final
-          setTimeout(()=>{ fecharWebViewer(true); }, 500); // slight delay
+    function onVideoEnded(){ mostrarPontuacao(() => {
+        if(currentIndex < fila.length - 1){ currentIndex++; playCurrent(); } else {
+          setTimeout(()=>{ fecharWebViewer(true); }, 500);
         }
       }); }
 
     function mostrarPontuacao(cb){ try{ if(ytPlayer && ytPlayer.stopVideo) ytPlayer.stopVideo(); }catch(e){}
       scoreDisplay.style.display = 'flex'; scoreText.textContent = '0'; applauseAudio.currentTime = 0; applauseAudio.play().catch(()=>{});
-      // anima números aleatórios por 2s
       let localInt = setInterval(()=>{ scoreText.textContent = Math.floor(Math.random()*101); }, 60);
       setTimeout(()=>{
         clearInterval(localInt);
         const finalScore = Math.floor(Math.random()*(100-75+1))+75;
         scoreText.textContent = finalScore;
         fireworksContainer.style.display = 'block';
-        // aguarda 2s e então inicia contagem regressiva de 10s
         setTimeout(()=>{ iniciarContagemRegressiva(10, cb); }, 2000);
       }, 2000);
     }
 
     function iniciarContagemRegressiva(segundos, cb){ let s = segundos; countdownEl.textContent = `Próxima música em ${s}...`;
-      // toca ding no início
       try{ dingAudio.currentTime = 0; dingAudio.play().catch(()=>{}); }catch(e){}
       countdownInterval = setInterval(()=>{
         s--; if(s>=0) countdownEl.textContent = `Próxima música em ${s}...`; if(s<=0){ clearInterval(countdownInterval); countdownEl.textContent = ''; scoreDisplay.style.display = 'none'; fireworksContainer.style.display = 'none'; try{ applauseAudio.pause(); applauseAudio.currentTime = 0; }catch(e){} if(cb) cb(); }
       }, 1000);
     }
 
-    function fecharWebViewer(skipReset=false){ viewer.style.display = 'none'; scoreDisplay.style.display = 'none'; fireworksContainer.style.display = 'none'; countdownEl.textContent = ''; try{ applauseAudio.pause(); applauseAudio.currentTime = 0; dingAudio.pause(); dingAudio.currentTime = 0; }catch(e){}
-      if(ytPlayer){ try{ ytPlayer.destroy(); }catch(e){} ytPlayer = null; }
+    function fecharWebViewer(skipReset = false) {
+      viewer.style.display = 'none';
+      scoreDisplay.style.display = 'none';
+      fireworksContainer.style.display = 'none';
+      countdownEl.textContent = '';
+
+      try {
+        applauseAudio.pause();
+        applauseAudio.currentTime = 0;
+        dingAudio.pause();
+        dingAudio.currentTime = 0;
+      } catch (e) {}
+
+      if (ytPlayer) { try{ ytPlayer.destroy(); }catch(e){} ytPlayer = null; }
+
       codigo.value = '';
-      bgAudio.play().catch(()=>{});
-      if(!skipReset){ // se não foi final da fila, não limpa. se foi, limpa fila
-        // noop
-      } else { // limpa fila e UI
-        fila = []; atualizarFilaUI(); resultado.innerHTML = '<p>🔎 Digite um código para começar.</p>'; }
+
+      // ✅ Retorna música ambiente apenas após o fim da fila
+      if (skipReset) {
+        try { bgAudio.currentTime = 0; bgAudio.play().catch(()=>{}); } catch(e) {}
+        fila = [];
+        atualizarFilaUI();
+        resultado.innerHTML = '<p>🔎 Digite um código para começar.</p>';
+      }
     }
 
     // init
     carregarMusicas(); atualizarFilaUI();
 
-    // expose some functions to inline handlers
-    window.digitar = digitar; window.backspace = backspace; window.clearAll = clearAll; window.buscar = buscar; window.adicionarNaFila = adicionarNaFila; window.removerDaFila = removerDaFila; window.iniciarFila = iniciarFila; window.fecharWebViewer = fecharWebViewer;
+    window.digitar = digitar; window.backspace = backspace; window.clearAll = clearAll;
+    window.buscar = buscar; window.adicionarNaFila = adicionarNaFila;
+    window.removerDaFila = removerDaFila; window.iniciarFila = iniciarFila;
+    window.fecharWebViewer = fecharWebViewer;
   </script>
 </body>
 </html>
