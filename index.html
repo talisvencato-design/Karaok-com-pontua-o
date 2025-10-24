@@ -5,14 +5,14 @@
   <title>Karaokê do Japa — Playlist</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
-    html, body { margin:0; padding:0; color:#fff; font-family: Arial, sans-serif; background: url('./9937771.jpg') no-repeat center center fixed; background-size: cover; height:100vh; }
-    .container { display:flex; flex-direction:column; min-height:100vh; }
+    html, body { margin:0; padding:0; color:#fff; font-family: Arial, sans-serif; background: url('./9937771.jpg') no-repeat center center fixed; background-size: cover; height:100vh; overflow:hidden; }
     header { text-align:center; padding:10px 0; }
     header img { max-width:480px; width:90%; height:auto; }
-    main.wrap { display:flex; gap:30px; padding:10px; justify-content:center; align-items:flex-start; flex:1; }
 
-    .left { width:260px; background:rgba(0,0,0,0.5); border-radius:12px; padding:18px; }
-    .right { flex:1; background:rgba(0,0,0,0.7); border-radius:12px; padding:20px; text-align:center; min-height:380px; max-width:900px; }
+    main.wrap { display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:20px; height:calc(100vh - 160px); overflow-y:auto; padding-bottom:120px; }
+
+    .left { background:rgba(0,0,0,0.5); border-radius:12px; padding:18px; margin-bottom:10px; text-align:center; }
+    .right { background:rgba(0,0,0,0.7); border-radius:12px; padding:20px; text-align:center; max-width:900px; width:95%; }
 
     input#codigo { width:200px; padding:12px; font-size:20px; border-radius:8px; border:none; text-align:center; }
     .keypad { display:grid; grid-template-columns:repeat(3,80px); gap:10px; margin-top:15px; justify-content:center; }
@@ -25,16 +25,15 @@
     .thumbnails img { width:240px; border-radius:10px; border:3px solid #666; cursor:pointer; transition: transform .15s; }
     .thumbnails img:hover { transform:scale(1.08); border-color:#ffcc00; }
 
-    /* Fila */
-    #filaContainer { margin-top:18px; background:rgba(255,255,255,0.03); padding:12px; border-radius:10px; text-align:left; }
-    #filaVideos { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
-    .fila-item { width:120px; background:rgba(0,0,0,0.6); border-radius:8px; padding:8px; text-align:center; position:relative; cursor:grab; }
-    .fila-item.dragging { opacity:0.5; }
+    /* Rodapé da fila */
+    #filaContainer { position:fixed; bottom:0; left:0; width:100%; background:rgba(0,0,0,0.6); padding:10px 20px; display:flex; justify-content:space-between; align-items:center; z-index:999; box-sizing:border-box; }
+    #filaVideos { display:flex; gap:10px; align-items:center; overflow-x:auto; }
+    .fila-item { width:80px; flex-shrink:0; background:rgba(255,255,255,0.08); border-radius:8px; padding:4px; text-align:center; position:relative; }
     .fila-item img { width:100%; border-radius:6px; }
-    .fila-item p { font-size:12px; margin:6px 0 0; }
-    .fila-item button.remove { position:absolute; top:6px; right:6px; background:#dc3545; border:none; color:white; border-radius:50%; width:26px; height:26px; cursor:pointer; }
+    .fila-item p { font-size:10px; margin:4px 0 0; }
+    .fila-item button.remove { position:absolute; top:2px; right:2px; background:#dc3545; border:none; color:white; border-radius:50%; width:18px; height:18px; cursor:pointer; font-size:12px; line-height:18px; }
 
-    #playFila { margin-top:12px; padding:10px 16px; font-size:18px; border-radius:8px; border:none; background:#007bff; color:white; cursor:pointer; }
+    #playFila { padding:10px 18px; font-size:16px; border-radius:8px; border:none; background:#007bff; color:white; cursor:pointer; }
     #playFila:disabled { opacity:0.4; cursor:not-allowed; }
 
     /* Webviewer */
@@ -51,56 +50,49 @@
     .firework { position:absolute; width:10px; height:10px; border-radius:50%; opacity:0; animation:explode 1s ease-out forwards; }
     @keyframes explode { 0%{transform:scale(0);opacity:1;} 100%{transform:scale(40);opacity:0;} }
 
-    @media (max-width:768px) { main.wrap { flex-direction:column; align-items:center; gap:20px; } .left{ width:100%; max-width:300px;} .right{ width:95%; min-height:200px; order:-1;} .thumbnails img{ width:100%; max-width:180px;} .fila-item{ width:84px; } #score-text{ font-size:20vw;} }
+    @media (max-width:768px) {
+      .thumbnails img { width:100%; max-width:180px; }
+      .fila-item { width:60px; }
+      #score-text { font-size:20vw; }
+    }
   </style>
 </head>
 <body>
   <header><img src="./logo.png" alt="Karaokê do Japa" /></header>
-  <div class="container">
-    <main class="wrap">
-      <section class="left">
-        <p>Digite o código da música:</p>
-        <input id="codigo" placeholder="Ex: 6197" type="tel" inputmode="none" />
-        <div class="keypad">
-          <button onclick="digitar('1')">1</button>
-          <button onclick="digitar('2')">2</button>
-          <button onclick="digitar('3')">3</button>
-          <button onclick="digitar('4')">4</button>
-          <button onclick="digitar('5')">5</button>
-          <button onclick="digitar('6')">6</button>
-          <button onclick="digitar('7')">7</button>
-          <button onclick="digitar('8')">8</button>
-          <button onclick="digitar('9')">9</button>
-          <button class="back" onclick="backspace()">BACK</button>
-          <button onclick="digitar('0')">0</button>
-          <button class="clear" onclick="clearAll()">C</button>
-          <button class="enter" onclick="buscar()">✔ ENTER</button>
-        </div>
+  <main class="wrap">
+    <section class="left">
+      <p>Digite o código da música:</p>
+      <input id="codigo" placeholder="Ex: 6197" type="tel" inputmode="none" />
+      <div class="keypad">
+        <button onclick="digitar('1')">1</button><button onclick="digitar('2')">2</button><button onclick="digitar('3')">3</button>
+        <button onclick="digitar('4')">4</button><button onclick="digitar('5')">5</button><button onclick="digitar('6')">6</button>
+        <button onclick="digitar('7')">7</button><button onclick="digitar('8')">8</button><button onclick="digitar('9')">9</button>
+        <button class="back" onclick="backspace()">BACK</button><button onclick="digitar('0')">0</button><button class="clear" onclick="clearAll()">C</button>
+        <button class="enter" onclick="buscar()">✔ ENTER</button>
+      </div>
+    </section>
 
-        <div id="filaContainer">
-          <h3>🎶 Fila de músicas <small id="filaCount">(0/5)</small></h3>
-          <div id="filaVideos"> <!-- itens serão inseridos aqui --> </div>
-          <button id="playFila" onclick="iniciarFila()" disabled>▶️ Iniciar Playlist</button>
-        </div>
-      </section>
+    <section class="right" id="resultado">
+      <p>🔎 Digite um código para começar.</p>
+    </section>
+  </main>
 
-      <section class="right" id="resultado">
-        <p>🔎 Digite um código para começar.</p>
-      </section>
-    </main>
+  <div id="filaContainer">
+    <div style="display:flex;flex-direction:column;gap:4px;">
+      <strong>🎶 Fila <span id="filaCount">(0/5)</span></strong>
+      <div id="filaVideos"></div>
+    </div>
+    <button id="playFila" onclick="iniciarFila()" disabled>▶️ Iniciar Playlist</button>
   </div>
 
   <div id="webviewer">
     <button id="closeBtn" onclick="fecharWebViewer()">✕</button>
     <div id="youtubeFrame"></div>
-
     <div id="score-display">
       <div id="fireworks-container" class="fireworks">
         <div class="firework" style="left:20%;top:80%;background:#f00"></div>
         <div class="firework" style="left:50%;top:50%;background:#0f0;animation-delay:0.5s"></div>
         <div class="firework" style="left:80%;top:70%;background:#00f;animation-delay:1s"></div>
-        <div class="firework" style="left:35%;top:60%;background:#ff0;animation-delay:1.5s"></div>
-        <div class="firework" style="left:65%;top:90%;background:#f0f;animation-delay:2s"></div>
       </div>
       <div id="score-label">SUA NOTA:</div>
       <div id="score-text">0</div>
@@ -113,169 +105,53 @@
   <audio id="dingAudio" src="./ding.mp3" preload="auto"></audio>
 
   <script>
-    // --- Assets & UI refs
-    const bgAudio = document.getElementById('bgAudio'); bgAudio.volume = 0.15;
-    const applauseAudio = document.getElementById('applauseAudio'); applauseAudio.volume = 0.8;
-    const dingAudio = document.getElementById('dingAudio'); dingAudio.volume = 0.9;
-    const scoreDisplay = document.getElementById('score-display');
-    const scoreText = document.getElementById('score-text');
-    const fireworksContainer = document.getElementById('fireworks-container');
-    const countdownEl = document.getElementById('countdown');
-    const codigo = document.getElementById('codigo');
-    const resultado = document.getElementById('resultado');
-    const filaVideos = document.getElementById('filaVideos');
-    const filaCount = document.getElementById('filaCount');
-    const playFilaBtn = document.getElementById('playFila');
-    const viewer = document.getElementById('webviewer');
+    const bgAudio=document.getElementById('bgAudio'); bgAudio.volume=0.15;
+    const applauseAudio=document.getElementById('applauseAudio'); applauseAudio.volume=0.8;
+    const dingAudio=document.getElementById('dingAudio'); dingAudio.volume=0.9;
+    const filaVideos=document.getElementById('filaVideos');
+    const filaCount=document.getElementById('filaCount');
+    const playFilaBtn=document.getElementById('playFila');
+    const resultado=document.getElementById('resultado');
+    const viewer=document.getElementById('webviewer');
+    const scoreDisplay=document.getElementById('score-display');
+    const scoreText=document.getElementById('score-text');
+    const fireworksContainer=document.getElementById('fireworks-container');
+    const countdownEl=document.getElementById('countdown');
 
-    // --- Data & constants
-    let musicas = [];
-    const API_KEY = "AIzaSyABdd6X4cKzMHR8JVWdw0jlLoFY4UDRQ88"; // permanece no cliente (melhor usar backend)
-    const MAX_FILA = 5;
+    let musicas=[], fila=[], currentIndex=0, ytPlayer=null;
+    const API_KEY="AIzaSyABdd6X4cKzMHR8JVWdw0jlLoFY4UDRQ88";
 
-    // Fila de reprodução
-    let fila = []; // { videoId, title, thumb, artista, musica }
-    let currentIndex = 0;
-    let ytPlayer = null;
+    document.addEventListener('click',()=>{ if(bgAudio.paused) bgAudio.play().catch(()=>{}); },{once:true});
 
-    document.addEventListener('click', () => { if (bgAudio.paused) bgAudio.play().catch(()=>{}); }, { once:true });
+    async function carregarMusicas(){ try{ const res=await fetch('./karaoke.json'); musicas=await res.json(); }catch(e){console.error(e);} }
 
-    async function carregarMusicas(){ try{ const res = await fetch('./karaoke.json'); musicas = await res.json(); }catch(e){ console.error('Erro ao carregar karaoke.json', e);} }
+    function atualizarFilaUI(){ filaVideos.innerHTML=''; fila.forEach((it,idx)=>{ const div=document.createElement('div'); div.className='fila-item'; div.innerHTML=`<button class='remove' onclick='removerDaFila(${idx})'>✕</button><img src='${it.thumb}'><p>${it.artista}</p>`; filaVideos.appendChild(div); }); filaCount.textContent=`(${fila.length}/5)`; playFilaBtn.disabled=fila.length===0; }
 
-    function atualizarFilaUI(){ filaVideos.innerHTML = '';
-      fila.forEach((it, idx) => {
-        const div = document.createElement('div'); div.className = 'fila-item'; div.setAttribute('draggable','true'); div.dataset.index = idx;
-        div.innerHTML = `
-          <button class="remove" title="Remover" onclick="removerDaFila(${idx})">✕</button>
-          <img src="${it.thumb}" alt="${escapeHtml(it.title)}">
-          <p title="${escapeHtml(it.title)}">${escapeHtml(truncate(it.title,28))}</p>
-        `;
-        // drag events
-        div.addEventListener('dragstart', dragStart);
-        div.addEventListener('dragend', dragEnd);
-        div.addEventListener('dragover', dragOver);
-        div.addEventListener('drop', dragDrop);
-        filaVideos.appendChild(div);
-      });
-      filaCount.textContent = `(${fila.length}/${MAX_FILA})`;
-      playFilaBtn.disabled = fila.length === 0;
-    }
-
-    function escapeHtml(text){ return String(text).replace(/[&<>"']/g, function(m){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]; }); }
-    function truncate(s,n){ return s.length>n? s.slice(0,n-1)+'…': s; }
-
-    function adicionarNaFila(item){ if(fila.length>=MAX_FILA){ alert('Fila cheia (máx 5). Remova algum item antes de adicionar.'); return; }
-      fila.push(item); atualizarFilaUI(); }
-
+    function adicionarNaFila(item){ if(fila.length>=5){alert('Fila cheia!');return;} fila.push(item); atualizarFilaUI(); }
     function removerDaFila(idx){ fila.splice(idx,1); atualizarFilaUI(); }
 
-    // Drag & Drop handlers (simples)
-    let dragSrcIndex = null;
-    function dragStart(e){ this.classList.add('dragging'); dragSrcIndex = Number(this.dataset.index); e.dataTransfer.effectAllowed = 'move'; }
-    function dragEnd(){ this.classList.remove('dragging'); dragSrcIndex = null; atualizarFilaUI(); }
-    function dragOver(e){ e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }
-    function dragDrop(e){ e.preventDefault(); const destIndex = Number(this.dataset.index); if(dragSrcIndex===null||isNaN(destIndex)) return; const [moved] = fila.splice(dragSrcIndex,1); fila.splice(destIndex,0,moved); atualizarFilaUI(); }
+    function digitar(n){ codigo.value+=n; }
+    function backspace(){ codigo.value=codigo.value.slice(0,-1); }
+    function clearAll(){ codigo.value=''; }
 
-    // Keyboard helpers
-    function digitar(n){ codigo.value += n; }
-    function backspace(){ codigo.value = codigo.value.slice(0,-1); }
-    function clearAll(){ codigo.value = ''; }
+    async function buscar(){ const codigoVal=codigo.value.trim(); resultado.innerHTML=''; const item=musicas.find(m=>Number(m.codigo)===Number(codigoVal)); if(!item){resultado.innerHTML='<p>❌ Código não encontrado.</p>';return;} resultado.innerHTML=`<h2>${item.artista} - ${item.musica}</h2><div class='thumbnails'></div>`; const thumbs=resultado.querySelector('.thumbnails'); const query=`karaoke ${item.artista} ${item.musica}`; const url=`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=6&q=${encodeURIComponent(query)}&key=${API_KEY}`; try{ const res=await fetch(url); const data=await res.json(); const videos=(data.items||[]).filter(i=>i.id?.videoId); if(!videos.length){resultado.innerHTML+='<p>❌ Nenhum vídeo encontrado.</p>';return;} videos.slice(0,3).forEach(v=>{ const img=document.createElement('img'); img.src=v.snippet.thumbnails.medium.url; img.onclick=()=>adicionarNaFila({videoId:v.id.videoId,artista:item.artista,musica:item.musica,thumb:v.snippet.thumbnails.default.url}); thumbs.appendChild(img); }); }catch(err){resultado.innerHTML='<p>❌ Erro ao buscar vídeo.</p>';}}
 
-    // Busca youtube
-    async function buscar(){ const codigoVal = codigo.value.trim(); resultado.innerHTML = ''; codigo.blur(); const item = musicas.find(m => Number(m.codigo) === Number(codigoVal));
-      if(!item){ resultado.innerHTML = '<p>❌ Código não encontrado.</p>'; return; }
-      resultado.innerHTML = `<h2>${escapeHtml(item.artista)} - ${escapeHtml(item.musica)}</h2><div class='thumbnails'></div>`;
-      const thumbs = resultado.querySelector('.thumbnails');
-      const query = `karaoke ${item.artista} ${item.musica}`;
-      const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=6&q=${encodeURIComponent(query)}&key=${API_KEY}`;
-      try{
-        const res = await fetch(url);
-        const data = await res.json();
-        const videos = (data.items||[]).filter(i=>i.id?.videoId);
-        if(!videos.length){ resultado.innerHTML += '<p>❌ Nenhum vídeo encontrado.</p>'; return; }
-        videos.slice(0,3).forEach(v=>{
-          const img = document.createElement('img'); img.src = v.snippet.thumbnails.medium.url; img.alt = v.snippet.title;
-          img.title = 'Adicionar à fila';
-          img.style.cursor = 'pointer';
-          img.onclick = () => {
-            adicionarNaFila({ videoId: v.id.videoId, title: v.snippet.title, thumb: v.snippet.thumbnails.default.url || v.snippet.thumbnails.medium.url, artista: item.artista, musica: item.musica });
-          };
-          thumbs.appendChild(img);
-        });
-      }catch(err){ resultado.innerHTML = '<p>❌ Erro ao buscar vídeo.</p>'; console.error(err); }
-    }
+    function iniciarFila(){ if(!fila.length)return; bgAudio.pause(); currentIndex=0; abrirWebViewer(); playCurrent(); }
+    function abrirWebViewer(){ viewer.style.display='flex'; scoreDisplay.style.display='none'; fireworksContainer.style.display='none'; if(!document.getElementById('ytapi')){ const tag=document.createElement('script'); tag.id='ytapi'; tag.src='https://www.youtube.com/iframe_api'; document.body.appendChild(tag);} }
 
-    // Player & workflow
-    function abrirWebViewer(){ viewer.style.display = 'flex'; scoreDisplay.style.display = 'none'; fireworksContainer.style.display = 'none'; if(!document.getElementById('ytapi')){ const tag = document.createElement('script'); tag.id='ytapi'; tag.src='https://www.youtube.com/iframe_api'; document.body.appendChild(tag); }
-      if(window.YT && YT.Player){ /* noop - will init when creating player */ } else { window.onYouTubeIframeAPIReady = ()=>{}; }
-    }
+    function criarPlayerECarregar(videoId){ const frame=document.getElementById('youtubeFrame'); frame.innerHTML=''; if(ytPlayer){try{ytPlayer.destroy();}catch(e){} ytPlayer=null;} ytPlayer=new YT.Player('youtubeFrame',{ videoId:videoId, playerVars:{autoplay:1,controls:1,rel:0,modestbranding:1}, events:{'onStateChange':e=>{if(e.data===YT.PlayerState.ENDED)onVideoEnded();}}}); }
 
-    function criarPlayerECarregar(videoId){ // sempre recria para garantir eventos limpos
-      const frameContainer = document.getElementById('youtubeFrame'); frameContainer.innerHTML = '';
-      if(ytPlayer){ try{ ytPlayer.destroy(); }catch(e){} ytPlayer = null; }
-      ytPlayer = new YT.Player('youtubeFrame', {
-        videoId: videoId,
-        playerVars: { autoplay:1, controls:1, rel:0, modestbranding:1 },
-        events: {
-          'onReady': (e)=>{ const iframe = e.target.getIframe(); iframe.style.width='100%'; iframe.style.height='100vh'; },
-          'onStateChange': (e)=>{ if(e.data === YT.PlayerState.ENDED) onVideoEnded(); }
-        }
-      });
-    }
+    function playCurrent(){ const it=fila[currentIndex]; if(!it)return; if(window.YT&&YT.Player){criarPlayerECarregar(it.videoId);} else {window.onYouTubeIframeAPIReady=()=>criarPlayerECarregar(it.videoId);} }
 
-    // Sequência de reprodução
-    async function iniciarFila(){ if(!fila.length) return; currentIndex = 0; abrirWebViewer(); playCurrent(); }
-    function playCurrent(){ const it = fila[currentIndex]; if(!it) return; // load YT API then player
-      if(window.YT && YT.Player){ criarPlayerECarregar(it.videoId); } else { window.onYouTubeIframeAPIReady = ()=> criarPlayerECarregar(it.videoId); const tag = document.getElementById('ytapi'); if(!tag){ const s = document.createElement('script'); s.id='ytapi'; s.src='https://www.youtube.com/iframe_api'; document.body.appendChild(s); } }
-    }
+    function onVideoEnded(){ mostrarPontuacao(()=>{ if(currentIndex<fila.length-1){currentIndex++; playCurrent();} else {fecharWebViewer(true);} }); }
 
-    // Quando vídeo termina
-    let scoreInterval = null; let countdownInterval = null;
-    function onVideoEnded(){ mostrarPontuacao(() => { // callback após pontuação e contagem
-        // se houver próximo vídeo
-        if(currentIndex < fila.length - 1){ currentIndex++; playCurrent(); } else { // fim da fila
-          // fecha após a contagem final
-          setTimeout(()=>{ fecharWebViewer(true); }, 500); // slight delay
-        }
-      }); }
+    function mostrarPontuacao(cb){ try{ytPlayer.stopVideo();}catch(e){} scoreDisplay.style.display='flex'; applauseAudio.currentTime=0; applauseAudio.play(); let localInt=setInterval(()=>{scoreText.textContent=Math.floor(Math.random()*101);},60); setTimeout(()=>{ clearInterval(localInt); const finalScore=Math.floor(Math.random()*(100-75+1))+75; scoreText.textContent=finalScore; fireworksContainer.style.display='block'; setTimeout(()=>{ iniciarContagemRegressiva(10,cb); },2000); },2000); }
 
-    function mostrarPontuacao(cb){ try{ if(ytPlayer && ytPlayer.stopVideo) ytPlayer.stopVideo(); }catch(e){}
-      scoreDisplay.style.display = 'flex'; scoreText.textContent = '0'; applauseAudio.currentTime = 0; applauseAudio.play().catch(()=>{});
-      // anima números aleatórios por 2s
-      let localInt = setInterval(()=>{ scoreText.textContent = Math.floor(Math.random()*101); }, 60);
-      setTimeout(()=>{
-        clearInterval(localInt);
-        const finalScore = Math.floor(Math.random()*(100-75+1))+75;
-        scoreText.textContent = finalScore;
-        fireworksContainer.style.display = 'block';
-        // aguarda 2s e então inicia contagem regressiva de 10s
-        setTimeout(()=>{ iniciarContagemRegressiva(10, cb); }, 2000);
-      }, 2000);
-    }
+    function iniciarContagemRegressiva(seg,cb){ let s=seg; countdownEl.textContent=`Próxima música em ${s}...`; dingAudio.currentTime=0; dingAudio.play().catch(()=>{}); const int=setInterval(()=>{s--; if(s>=0)countdownEl.textContent=`Próxima música em ${s}...`; if(s<=0){clearInterval(int); countdownEl.textContent=''; scoreDisplay.style.display='none'; fireworksContainer.style.display='none'; applauseAudio.pause(); applauseAudio.currentTime=0; if(cb)cb();}},1000); }
 
-    function iniciarContagemRegressiva(segundos, cb){ let s = segundos; countdownEl.textContent = `Próxima música em ${s}...`;
-      // toca ding no início
-      try{ dingAudio.currentTime = 0; dingAudio.play().catch(()=>{}); }catch(e){}
-      countdownInterval = setInterval(()=>{
-        s--; if(s>=0) countdownEl.textContent = `Próxima música em ${s}...`; if(s<=0){ clearInterval(countdownInterval); countdownEl.textContent = ''; scoreDisplay.style.display = 'none'; fireworksContainer.style.display = 'none'; try{ applauseAudio.pause(); applauseAudio.currentTime = 0; }catch(e){} if(cb) cb(); }
-      }, 1000);
-    }
+    function fecharWebViewer(reset=false){ viewer.style.display='none'; scoreDisplay.style.display='none'; fireworksContainer.style.display='none'; countdownEl.textContent=''; applauseAudio.pause(); applauseAudio.currentTime=0; dingAudio.pause(); dingAudio.currentTime=0; if(ytPlayer){try{ytPlayer.destroy();}catch(e){} ytPlayer=null;} if(reset){ fila=[]; atualizarFilaUI(); resultado.innerHTML='<p>🔎 Digite um código para começar.</p>'; bgAudio.play().catch(()=>{});} }
 
-    function fecharWebViewer(skipReset=false){ viewer.style.display = 'none'; scoreDisplay.style.display = 'none'; fireworksContainer.style.display = 'none'; countdownEl.textContent = ''; try{ applauseAudio.pause(); applauseAudio.currentTime = 0; dingAudio.pause(); dingAudio.currentTime = 0; }catch(e){}
-      if(ytPlayer){ try{ ytPlayer.destroy(); }catch(e){} ytPlayer = null; }
-      codigo.value = '';
-      bgAudio.play().catch(()=>{});
-      if(!skipReset){ // se não foi final da fila, não limpa. se foi, limpa fila
-        // noop
-      } else { // limpa fila e UI
-        fila = []; atualizarFilaUI(); resultado.innerHTML = '<p>🔎 Digite um código para começar.</p>'; }
-    }
-
-    // init
     carregarMusicas(); atualizarFilaUI();
-
-    // expose some functions to inline handlers
-    window.digitar = digitar; window.backspace = backspace; window.clearAll = clearAll; window.buscar = buscar; window.adicionarNaFila = adicionarNaFila; window.removerDaFila = removerDaFila; window.iniciarFila = iniciarFila; window.fecharWebViewer = fecharWebViewer;
   </script>
 </body>
 </html>
