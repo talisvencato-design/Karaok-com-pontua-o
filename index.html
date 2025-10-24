@@ -21,7 +21,10 @@
     .keypad .back { background:#ff8800; }
     .keypad .clear { background:#dc3545; }
 
-    .thumbnails { display:flex; flex-wrap:wrap; justify-content:center; gap:20px; margin-top:20px; }
+    .thumbnails {  display: flex;  flex-wrap: wrap;  justify-content: center;  gap: 20px;  margin-top: 20px;  height: auto;       /* garante que a altura seja só a dos itens */
+  align-items: flex-start; /* garante que as imagens fiquem alinhadas no topo */
+}
+
     .thumbnails img { width:160px; border-radius:8px; border:2px solid #666; cursor:pointer; transition: transform .15s; }
     .thumbnails img:hover { transform:scale(1.08); border-color:#ffcc00; }
 
