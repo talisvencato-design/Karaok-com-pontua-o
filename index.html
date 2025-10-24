@@ -2,353 +2,280 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
-  <title>Karaokê do Japa</title>
+  <title>Karaokê do Japa — Playlist</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
-    body {
-      margin: 0;
-      color: #fff;
-      font-family: Arial, sans-serif;
-      background: url('./9937771.jpg') no-repeat center center fixed;
-      background-size: cover;
-      overflow-x: hidden;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-    header { text-align: center; padding: 20px; }
-    header img { max-width: 480px; width: 90%; height: auto; }
-    main.wrap {
-      flex: 1;
-      display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start;
-      gap: 30px; padding: 20px;
-    }
-    .left { width: 280px; text-align: center; flex-shrink: 0; }
-    .right {
-      flex: 1; background: rgba(0,0,0,0.7); border-radius: 12px;
-      padding: 20px; text-align: center; min-height: 380px; max-width: 900px;
-      min-width: 300px;
-    }
-    input#codigo {
-      width: 220px; padding: 14px; font-size: 22px;
-      border-radius: 8px; border: none; text-align: center;
-    }
-    .keypad {
-      display: grid; grid-template-columns: repeat(3, 90px);
-      gap: 12px; margin-top: 18px; justify-content: center;
-    }
-    .keypad button {
-      padding: 16px; font-size: 20px; border-radius: 8px;
-      border: none; cursor: pointer; background: #333; color: #fff;
-      transition: background 0.1s;
-    }
-    .keypad button:active { background: #555; }
-    .keypad .enter { background: #28a745; }
-    .keypad .clear { background: #dc3545; }
-    .keypad .back { background: #ff8800; }
-    .thumbnails {
-      display: flex; flex-wrap: wrap; justify-content: center;
-      gap: 20px; margin-top: 20px;
-    }
-    .thumbnails img {
-      width: 240px; border-radius: 10px;
-      border: 3px solid #666; cursor: pointer;
-      transition: transform .15s;
-    }
-    .thumbnails img:hover {
-      transform: scale(1.08); border-color: #ffcc00;
-    }
-    #webviewer {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.95);
-      display: none; justify-content: center; align-items: center;
-      z-index: 9999;
-      flex-direction: column;
-    }
-    #webviewer iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-    #closeBtn {
-      position: absolute;
-      top: 15px;
-      right: 20px;
-      background: #dc3545;
-      color: white;
-      border: none;
-      font-size: 22px;
-      border-radius: 50%;
-      width: 45px; height: 45px;
-      cursor: pointer;
-      z-index: 10000;
-    }
-    #closeBtn:hover { background: #b52a36; }
+    html, body { margin:0; padding:0; color:#fff; font-family: Arial, sans-serif; background: url('./9937771.jpg') no-repeat center center fixed; background-size: cover; height:100vh; }
+    .container { display:flex; flex-direction:column; min-height:100vh; }
+    header { text-align:center; padding:10px 0; }
+    header img { max-width:480px; width:90%; height:auto; }
+    main.wrap { display:flex; gap:30px; padding:10px; justify-content:center; align-items:flex-start; flex:1; }
 
-    /* Estilos Adicionados para o Placar e Fogos */
-    #score-display {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.9);
-        display: none;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        z-index: 10001;
-        text-align: center;
-    }
-    #score-text {
-        font-size: 15vw;
-        font-weight: bold;
-        color: #ffcc00;
-        text-shadow: 0 0 20px #ff0000, 0 0 10px #ff0000;
-    }
-    #score-label {
-        font-size: 4vw;
-        color: #fff;
-        margin-top: 20px;
-    }
-    /* Animação de Fogos de Artifício */
-    .fireworks {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 10002;
-      display: none;
-    }
-    .firework {
-      position: absolute;
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      opacity: 0;
-      /* Animação simples de expansão e desaparecimento */
-      animation: explode 1s ease-out forwards;
-    }
-    /* Posições e cores variadas para os fogos */
-    .firework.a { background-color: #f00; left: 20%; top: 80%; }
-    .firework.b { background-color: #0f0; left: 50%; top: 50%; animation-delay: 0.5s; }
-    .firework.c { background-color: #00f; left: 80%; top: 70%; animation-delay: 1s; }
-    .firework.d { background-color: #ff0; left: 35%; top: 60%; animation-delay: 1.5s; }
-    .firework.e { background-color: #f0f; left: 65%; top: 90%; animation-delay: 2s; }
+    .left { width:260px; background:rgba(0,0,0,0.5); border-radius:12px; padding:18px; }
+    .right { flex:1; background:rgba(0,0,0,0.7); border-radius:12px; padding:20px; text-align:center; min-height:380px; max-width:900px; }
 
-    @keyframes explode {
-      0% { transform: scale(0); opacity: 1; }
-      100% { transform: scale(40); opacity: 0; }
-    }
-    /* Fim dos Estilos Adicionados */
+    input#codigo { width:200px; padding:12px; font-size:20px; border-radius:8px; border:none; text-align:center; }
+    .keypad { display:grid; grid-template-columns:repeat(3,80px); gap:10px; margin-top:15px; justify-content:center; }
+    .keypad button { padding:12px; font-size:18px; border-radius:8px; border:none; cursor:pointer; background:#333; color:#fff; }
+    .keypad .enter { background:#28a745; grid-column:1 / -1; font-size:20px; padding:14px; }
+    .keypad .back { background:#ff8800; }
+    .keypad .clear { background:#dc3545; }
 
-    @media (max-width: 768px) {
-      main.wrap {
-        flex-direction: column;
-        align-items: center;
-        gap: 20px;
-      }
-      header img { max-width: 100%; }
-      .left { width: 100%; max-width: 300px; }
-      .right {
-        width: 95%; max-width: none; min-height: 200px;
-        order: -1;
-      }
-      .keypad {
-        grid-template-columns: repeat(3, 1fr);
-        width: 100%;
-        max-width: 300px;
-        margin: 18px auto 0;
-      }
-      .keypad button { padding: 12px; font-size: 18px; }
-      input#codigo { width: 100%; max-width: 220px; }
-      .thumbnails img { width: 100%; max-width: 180px; }
-      /* Responsividade dos estilos adicionados */
-      #score-text { font-size: 20vw; }
-      #score-label { font-size: 6vw; }
-    }
+    .thumbnails { display:flex; flex-wrap:wrap; justify-content:center; gap:20px; margin-top:20px; }
+    .thumbnails img { width:240px; border-radius:10px; border:3px solid #666; cursor:pointer; transition: transform .15s; }
+    .thumbnails img:hover { transform:scale(1.08); border-color:#ffcc00; }
+
+    /* Fila */
+    #filaContainer { margin-top:18px; background:rgba(255,255,255,0.03); padding:12px; border-radius:10px; text-align:left; }
+    #filaVideos { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .fila-item { width:120px; background:rgba(0,0,0,0.6); border-radius:8px; padding:8px; text-align:center; position:relative; cursor:grab; }
+    .fila-item.dragging { opacity:0.5; }
+    .fila-item img { width:100%; border-radius:6px; }
+    .fila-item p { font-size:12px; margin:6px 0 0; }
+    .fila-item button.remove { position:absolute; top:6px; right:6px; background:#dc3545; border:none; color:white; border-radius:50%; width:26px; height:26px; cursor:pointer; }
+
+    #playFila { margin-top:12px; padding:10px 16px; font-size:18px; border-radius:8px; border:none; background:#007bff; color:white; cursor:pointer; }
+    #playFila:disabled { opacity:0.4; cursor:not-allowed; }
+
+    /* Webviewer */
+    #webviewer { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); display:none; justify-content:center; align-items:center; z-index:9999; flex-direction:column; }
+    #youtubeFrame { width:100%; height:100vh; }
+    #closeBtn { position:absolute; top:15px; right:20px; background:#dc3545; color:white; border:none; font-size:22px; border-radius:50%; width:45px; height:45px; cursor:pointer; z-index:10000; }
+
+    #score-display { position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); display:none; flex-direction:column; justify-content:center; align-items:center; z-index:99999; text-align:center; }
+    #score-text { font-size:15vw; font-weight:bold; color:#ffcc00; text-shadow:0 0 20px #ff0000; }
+    #score-label { font-size:4vw; color:#fff; margin-top:20px; }
+    #countdown { font-size:5vw; margin-top:10px; color:#fff; }
+
+    .fireworks { position:absolute; width:100%; height:100%; pointer-events:none; z-index:100000; display:none; }
+    .firework { position:absolute; width:10px; height:10px; border-radius:50%; opacity:0; animation:explode 1s ease-out forwards; }
+    @keyframes explode { 0%{transform:scale(0);opacity:1;} 100%{transform:scale(40);opacity:0;} }
+
+    @media (max-width:768px) { main.wrap { flex-direction:column; align-items:center; gap:20px; } .left{ width:100%; max-width:300px;} .right{ width:95%; min-height:200px; order:-1;} .thumbnails img{ width:100%; max-width:180px;} .fila-item{ width:84px; } #score-text{ font-size:20vw;} }
   </style>
 </head>
 <body>
   <header><img src="./logo.png" alt="Karaokê do Japa" /></header>
-  <main class="wrap">
-    <section class="left">
-      <p>Digite o código da música:</p>
-      <input id="codigo" placeholder="Ex: 6197" type="tel" inputmode="none" />
-      <div class="keypad">
-        <button onclick="digitar('1')">1</button>
-        <button onclick="digitar('2')">2</button>
-        <button onclick="digitar('3')">3</button>
-        <button onclick="digitar('4')">4</button>
-        <button onclick="digitar('5')">5</button>
-        <button onclick="digitar('6')">6</button>
-        <button onclick="digitar('7')">7</button>
-        <button onclick="digitar('8')">8</button>
-        <button onclick="digitar('9')">9</button>
-        <button class="back" onclick="backspace()">BACK</button>
-        <button onclick="digitar('0')">0</button>
-        <button class="clear" onclick="clearAll()">C</button>
-        <button class="enter" onclick="buscar()">✔ ENTER</button>
-      </div>
-    </section>
-    <section class="right" id="resultado">
-      <p>🔎 Digite um código para começar.</p>
-    </section>
-  </main>
+  <div class="container">
+    <main class="wrap">
+      <section class="left">
+        <p>Digite o código da música:</p>
+        <input id="codigo" placeholder="Ex: 6197" type="tel" inputmode="none" />
+        <div class="keypad">
+          <button onclick="digitar('1')">1</button>
+          <button onclick="digitar('2')">2</button>
+          <button onclick="digitar('3')">3</button>
+          <button onclick="digitar('4')">4</button>
+          <button onclick="digitar('5')">5</button>
+          <button onclick="digitar('6')">6</button>
+          <button onclick="digitar('7')">7</button>
+          <button onclick="digitar('8')">8</button>
+          <button onclick="digitar('9')">9</button>
+          <button class="back" onclick="backspace()">BACK</button>
+          <button onclick="digitar('0')">0</button>
+          <button class="clear" onclick="clearAll()">C</button>
+          <button class="enter" onclick="buscar()">✔ ENTER</button>
+        </div>
+
+        <div id="filaContainer">
+          <h3>🎶 Fila de músicas <small id="filaCount">(0/5)</small></h3>
+          <div id="filaVideos"> <!-- itens serão inseridos aqui --> </div>
+          <button id="playFila" onclick="iniciarFila()" disabled>▶️ Iniciar Playlist</button>
+        </div>
+      </section>
+
+      <section class="right" id="resultado">
+        <p>🔎 Digite um código para começar.</p>
+      </section>
+    </main>
+  </div>
+
   <div id="webviewer">
     <button id="closeBtn" onclick="fecharWebViewer()">✕</button>
-    <iframe id="youtubeFrame" allow="autoplay; fullscreen; encrypted-media" allowfullscreen></iframe>
+    <div id="youtubeFrame"></div>
+
     <div id="score-display">
       <div id="fireworks-container" class="fireworks">
-        <div class="firework a"></div>
-        <div class="firework b"></div>
-        <div class="firework c"></div>
-        <div class="firework d"></div>
-        <div class="firework e"></div>
+        <div class="firework" style="left:20%;top:80%;background:#f00"></div>
+        <div class="firework" style="left:50%;top:50%;background:#0f0;animation-delay:0.5s"></div>
+        <div class="firework" style="left:80%;top:70%;background:#00f;animation-delay:1s"></div>
+        <div class="firework" style="left:35%;top:60%;background:#ff0;animation-delay:1.5s"></div>
+        <div class="firework" style="left:65%;top:90%;background:#f0f;animation-delay:2s"></div>
       </div>
       <div id="score-label">SUA NOTA:</div>
       <div id="score-text">0</div>
+      <div id="countdown"></div>
     </div>
-    </div>
+  </div>
+
   <audio id="bgAudio" src="./ambiente.mp3" loop></audio>
   <audio id="applauseAudio" src="./aplausos.mp3" preload="auto"></audio>
+  <audio id="dingAudio" src="./ding.mp3" preload="auto"></audio>
+
   <script>
-    const bgAudio = document.getElementById('bgAudio');
-    bgAudio.volume = 0.15;
-    // Variáveis Adicionadas para a Pontuação
-    const applauseAudio = document.getElementById('applauseAudio');
-    applauseAudio.volume = 0.8;
+    // --- Assets & UI refs
+    const bgAudio = document.getElementById('bgAudio'); bgAudio.volume = 0.15;
+    const applauseAudio = document.getElementById('applauseAudio'); applauseAudio.volume = 0.8;
+    const dingAudio = document.getElementById('dingAudio'); dingAudio.volume = 0.9;
     const scoreDisplay = document.getElementById('score-display');
     const scoreText = document.getElementById('score-text');
     const fireworksContainer = document.getElementById('fireworks-container');
-    // Fim das Variáveis Adicionadas
+    const countdownEl = document.getElementById('countdown');
     const codigo = document.getElementById('codigo');
-    const viewer = document.getElementById('webviewer');
-    const frame = document.getElementById('youtubeFrame');
     const resultado = document.getElementById('resultado');
+    const filaVideos = document.getElementById('filaVideos');
+    const filaCount = document.getElementById('filaCount');
+    const playFilaBtn = document.getElementById('playFila');
+    const viewer = document.getElementById('webviewer');
 
-    document.addEventListener('click', () => {
-      if (bgAudio.paused) bgAudio.play().catch(()=>{});
-    }, { once: true });
-
+    // --- Data & constants
     let musicas = [];
-    const API_KEY = "AIzaSyABdd6X4cKzMHR8JVWdw0jlLoFY4UDRQ88";
+    const API_KEY = "AIzaSyABdd6X4cKzMHR8JVWdw0jlLoFY4UDRQ88"; // permanece no cliente (melhor usar backend)
+    const MAX_FILA = 5;
 
-    async function carregarMusicas() {
-      try {
-        const res = await fetch("./karaoke.json");
-        musicas = await res.json();
-      } catch (e) { console.error("Erro ao carregar karaoke.json:", e); }
+    // Fila de reprodução
+    let fila = []; // { videoId, title, thumb, artista, musica }
+    let currentIndex = 0;
+    let ytPlayer = null;
+
+    document.addEventListener('click', () => { if (bgAudio.paused) bgAudio.play().catch(()=>{}); }, { once:true });
+
+    async function carregarMusicas(){ try{ const res = await fetch('./karaoke.json'); musicas = await res.json(); }catch(e){ console.error('Erro ao carregar karaoke.json', e);} }
+
+    function atualizarFilaUI(){ filaVideos.innerHTML = '';
+      fila.forEach((it, idx) => {
+        const div = document.createElement('div'); div.className = 'fila-item'; div.setAttribute('draggable','true'); div.dataset.index = idx;
+        div.innerHTML = `
+          <button class="remove" title="Remover" onclick="removerDaFila(${idx})">✕</button>
+          <img src="${it.thumb}" alt="${escapeHtml(it.title)}">
+          <p title="${escapeHtml(it.title)}">${escapeHtml(truncate(it.title,28))}</p>
+        `;
+        // drag events
+        div.addEventListener('dragstart', dragStart);
+        div.addEventListener('dragend', dragEnd);
+        div.addEventListener('dragover', dragOver);
+        div.addEventListener('drop', dragDrop);
+        filaVideos.appendChild(div);
+      });
+      filaCount.textContent = `(${fila.length}/${MAX_FILA})`;
+      playFilaBtn.disabled = fila.length === 0;
     }
 
+    function escapeHtml(text){ return String(text).replace(/[&<>"']/g, function(m){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]; }); }
+    function truncate(s,n){ return s.length>n? s.slice(0,n-1)+'…': s; }
+
+    function adicionarNaFila(item){ if(fila.length>=MAX_FILA){ alert('Fila cheia (máx 5). Remova algum item antes de adicionar.'); return; }
+      fila.push(item); atualizarFilaUI(); }
+
+    function removerDaFila(idx){ fila.splice(idx,1); atualizarFilaUI(); }
+
+    // Drag & Drop handlers (simples)
+    let dragSrcIndex = null;
+    function dragStart(e){ this.classList.add('dragging'); dragSrcIndex = Number(this.dataset.index); e.dataTransfer.effectAllowed = 'move'; }
+    function dragEnd(){ this.classList.remove('dragging'); dragSrcIndex = null; atualizarFilaUI(); }
+    function dragOver(e){ e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }
+    function dragDrop(e){ e.preventDefault(); const destIndex = Number(this.dataset.index); if(dragSrcIndex===null||isNaN(destIndex)) return; const [moved] = fila.splice(dragSrcIndex,1); fila.splice(destIndex,0,moved); atualizarFilaUI(); }
+
+    // Keyboard helpers
     function digitar(n){ codigo.value += n; }
     function backspace(){ codigo.value = codigo.value.slice(0,-1); }
     function clearAll(){ codigo.value = ''; }
 
-    async function buscar() {
-      const codigoVal = codigo.value.trim();
-      resultado.innerHTML = "";
-      codigo.blur();
-      const item = musicas.find(m => Number(m.codigo) === Number(codigoVal));
-      if (!item) { resultado.innerHTML = "<p>❌ Código não encontrado.</p>"; return; }
+    // Busca youtube
+    async function buscar(){ const codigoVal = codigo.value.trim(); resultado.innerHTML = ''; codigo.blur(); const item = musicas.find(m => Number(m.codigo) === Number(codigoVal));
+      if(!item){ resultado.innerHTML = '<p>❌ Código não encontrado.</p>'; return; }
+      resultado.innerHTML = `<h2>${escapeHtml(item.artista)} - ${escapeHtml(item.musica)}</h2><div class='thumbnails'></div>`;
+      const thumbs = resultado.querySelector('.thumbnails');
       const query = `karaoke ${item.artista} ${item.musica}`;
       const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=6&q=${encodeURIComponent(query)}&key=${API_KEY}`;
-      try {
+      try{
         const res = await fetch(url);
         const data = await res.json();
-        const videos = (data.items || []).filter(i => i.id?.videoId);
-        if (!videos.length) {
-          resultado.innerHTML = `<h2>${item.artista} - ${item.musica}</h2><p>❌ Nenhum vídeo encontrado.</p>`;
-          return;
-        }
-        resultado.innerHTML = `<h2>${item.artista} - ${item.musica}</h2><div class='thumbnails'></div>`;
-        const thumbs = resultado.querySelector('.thumbnails');
-        videos.slice(0,3).forEach(v => {
-          const img = document.createElement("img");
-          img.src = v.snippet.thumbnails.medium.url;
-          img.alt = v.snippet.title;
-          img.onclick = () => abrirVideoNoWebViewer(v.id.videoId);
+        const videos = (data.items||[]).filter(i=>i.id?.videoId);
+        if(!videos.length){ resultado.innerHTML += '<p>❌ Nenhum vídeo encontrado.</p>'; return; }
+        videos.slice(0,3).forEach(v=>{
+          const img = document.createElement('img'); img.src = v.snippet.thumbnails.medium.url; img.alt = v.snippet.title;
+          img.title = 'Adicionar à fila';
+          img.style.cursor = 'pointer';
+          img.onclick = () => {
+            adicionarNaFila({ videoId: v.id.videoId, title: v.snippet.title, thumb: v.snippet.thumbnails.default.url || v.snippet.thumbnails.medium.url, artista: item.artista, musica: item.musica });
+          };
           thumbs.appendChild(img);
         });
-      } catch (err) {
-        resultado.innerHTML = "<p>❌ Erro ao buscar vídeo.</p>";
-        console.error(err);
-      }
+      }catch(err){ resultado.innerHTML = '<p>❌ Erro ao buscar vídeo.</p>'; console.error(err); }
     }
 
-    function abrirVideoNoWebViewer(videoId) {
-      bgAudio.pause();
-      const embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&enablejsapi=1&controls=1`;
-      frame.src = "";
-      setTimeout(() => { frame.src = embedUrl; }, 100);
-      frame.setAttribute("allow", "autoplay; fullscreen; encrypted-media");
-      viewer.style.display = "flex";
-      // Garante que o placar de pontuação esteja oculto ao iniciar o vídeo
-      scoreDisplay.style.display = "none";
-
-      window.onYouTubeIframeAPIReady = function() {
-        new YT.Player('youtubeFrame', {
-          events: {
-            // Chama a função de pontuação quando o vídeo termina
-            'onStateChange': function(e) {
-              if (e.data === YT.PlayerState.ENDED) mostrarPontuacao();
-            }
-          }
-        });
-      };
-      if (!document.getElementById('ytapi')) {
-        const tag = document.createElement('script');
-        tag.id = 'ytapi';
-        tag.src = "https://www.youtube.com/iframe_api";
-        document.body.appendChild(tag);
-      }
+    // Player & workflow
+    function abrirWebViewer(){ viewer.style.display = 'flex'; scoreDisplay.style.display = 'none'; fireworksContainer.style.display = 'none'; if(!document.getElementById('ytapi')){ const tag = document.createElement('script'); tag.id='ytapi'; tag.src='https://www.youtube.com/iframe_api'; document.body.appendChild(tag); }
+      if(window.YT && YT.Player){ /* noop - will init when creating player */ } else { window.onYouTubeIframeAPIReady = ()=>{}; }
     }
 
-    // Função Adicionada para Mostrar a Pontuação e Animações
-    function mostrarPontuacao() {
-      frame.src = ""; // Para o vídeo
-      scoreDisplay.style.display = "flex";
-      scoreText.textContent = "0";
-      applauseAudio.currentTime = 0; // Reinicia o som
-      applauseAudio.play().catch(()=>{});
+    function criarPlayerECarregar(videoId){ // sempre recria para garantir eventos limpos
+      const frameContainer = document.getElementById('youtubeFrame'); frameContainer.innerHTML = '';
+      if(ytPlayer){ try{ ytPlayer.destroy(); }catch(e){} ytPlayer = null; }
+      ytPlayer = new YT.Player('youtubeFrame', {
+        videoId: videoId,
+        playerVars: { autoplay:1, controls:1, rel:0, modestbranding:1 },
+        events: {
+          'onReady': (e)=>{ const iframe = e.target.getIframe(); iframe.style.width='100%'; iframe.style.height='100vh'; },
+          'onStateChange': (e)=>{ if(e.data === YT.PlayerState.ENDED) onVideoEnded(); }
+        }
+      });
+    }
 
-      // 1. Randomização da Pontuação (2 segundos)
-      let randomizationInterval = setInterval(() => {
-        // Random de 0 a 100 para a randomização
-        scoreText.textContent = Math.floor(Math.random() * 101);
-      }, 50);
+    // Sequência de reprodução
+    async function iniciarFila(){ if(!fila.length) return; currentIndex = 0; abrirWebViewer(); playCurrent(); }
+    function playCurrent(){ const it = fila[currentIndex]; if(!it) return; // load YT API then player
+      if(window.YT && YT.Player){ criarPlayerECarregar(it.videoId); } else { window.onYouTubeIframeAPIReady = ()=> criarPlayerECarregar(it.videoId); const tag = document.getElementById('ytapi'); if(!tag){ const s = document.createElement('script'); s.id='ytapi'; s.src='https://www.youtube.com/iframe_api'; document.body.appendChild(s); } }
+    }
 
-      // 2. Apresentação da Nota Final
-      setTimeout(() => {
-        clearInterval(randomizationInterval);
-        // Gera a nota final entre 75 e 100
-        const finalScore = Math.floor(Math.random() * (100 - 75 + 1)) + 75;
+    // Quando vídeo termina
+    let scoreInterval = null; let countdownInterval = null;
+    function onVideoEnded(){ mostrarPontuacao(() => { // callback após pontuação e contagem
+        // se houver próximo vídeo
+        if(currentIndex < fila.length - 1){ currentIndex++; playCurrent(); } else { // fim da fila
+          // fecha após a contagem final
+          setTimeout(()=>{ fecharWebViewer(true); }, 500); // slight delay
+        }
+      }); }
+
+    function mostrarPontuacao(cb){ try{ if(ytPlayer && ytPlayer.stopVideo) ytPlayer.stopVideo(); }catch(e){}
+      scoreDisplay.style.display = 'flex'; scoreText.textContent = '0'; applauseAudio.currentTime = 0; applauseAudio.play().catch(()=>{});
+      // anima números aleatórios por 2s
+      let localInt = setInterval(()=>{ scoreText.textContent = Math.floor(Math.random()*101); }, 60);
+      setTimeout(()=>{
+        clearInterval(localInt);
+        const finalScore = Math.floor(Math.random()*(100-75+1))+75;
         scoreText.textContent = finalScore;
-        fireworksContainer.style.display = "block"; // Mostra os fogos
-
-        // 3. Fechar e Retornar ao Menu (após 5 segundos de apresentação)
-        setTimeout(() => {
-          fecharWebViewer();
-        }, 5000); // 5 segundos de apresentação
-      }, 2000); // 2 segundos de randomização
+        fireworksContainer.style.display = 'block';
+        // aguarda 2s e então inicia contagem regressiva de 10s
+        setTimeout(()=>{ iniciarContagemRegressiva(10, cb); }, 2000);
+      }, 2000);
     }
-    // Fim da Função Adicionada
 
-    function fecharWebViewer() {
-      viewer.style.display = "none";
-      frame.src = "";
-      // Esconde elementos de pontuação e para o som (Adicionado)
-      scoreDisplay.style.display = "none";
-      fireworksContainer.style.display = "none";
-      applauseAudio.pause();
-      // Fim da lógica de esconder
-      resultado.innerHTML = "<p>🔎 Digite um código para começar.</p>";
-      codigo.value = "";
+    function iniciarContagemRegressiva(segundos, cb){ let s = segundos; countdownEl.textContent = `Próxima música em ${s}...`;
+      // toca ding no início
+      try{ dingAudio.currentTime = 0; dingAudio.play().catch(()=>{}); }catch(e){}
+      countdownInterval = setInterval(()=>{
+        s--; if(s>=0) countdownEl.textContent = `Próxima música em ${s}...`; if(s<=0){ clearInterval(countdownInterval); countdownEl.textContent = ''; scoreDisplay.style.display = 'none'; fireworksContainer.style.display = 'none'; try{ applauseAudio.pause(); applauseAudio.currentTime = 0; }catch(e){} if(cb) cb(); }
+      }, 1000);
+    }
+
+    function fecharWebViewer(skipReset=false){ viewer.style.display = 'none'; scoreDisplay.style.display = 'none'; fireworksContainer.style.display = 'none'; countdownEl.textContent = ''; try{ applauseAudio.pause(); applauseAudio.currentTime = 0; dingAudio.pause(); dingAudio.currentTime = 0; }catch(e){}
+      if(ytPlayer){ try{ ytPlayer.destroy(); }catch(e){} ytPlayer = null; }
+      codigo.value = '';
       bgAudio.play().catch(()=>{});
+      if(!skipReset){ // se não foi final da fila, não limpa. se foi, limpa fila
+        // noop
+      } else { // limpa fila e UI
+        fila = []; atualizarFilaUI(); resultado.innerHTML = '<p>🔎 Digite um código para começar.</p>'; }
     }
 
-    carregarMusicas();
+    // init
+    carregarMusicas(); atualizarFilaUI();
+
+    // expose some functions to inline handlers
+    window.digitar = digitar; window.backspace = backspace; window.clearAll = clearAll; window.buscar = buscar; window.adicionarNaFila = adicionarNaFila; window.removerDaFila = removerDaFila; window.iniciarFila = iniciarFila; window.fecharWebViewer = fecharWebViewer;
   </script>
 </body>
 </html>
